@@ -15,13 +15,13 @@ namespace SimpleWebAPI.Models
         /// The Social Security number of a student. 
         /// Example: 3012938847
         /// </summary>
-        int SSN { get; set; }
+        public int SSN { get; set; }
 
 
         /// <summary>
         ///  The name of a student
         ///  Example: "Gunnar Atlason"
         /// </summary>
-        String Name { get; set; }
+        public String Name { get; set; }
 	}
 }
