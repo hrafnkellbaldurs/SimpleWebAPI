@@ -143,7 +143,7 @@ namespace SimpleWebAPI.Controllers
 
         // api/courses/
         [HttpPost]
-        [Route("")]
+        [Route("{id}")]
         public void AddStudent(Student s, int id)
         {
             //201 post successful
