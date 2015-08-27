@@ -10,8 +10,7 @@ namespace SimpleWebAPI.Controllers
     [RoutePrefix("api/courses")]
     public class CoursesController : ApiController
     {
-        private List<Course> _courses;
-        private List<Student> _students;
+        private static List<Course> _courses;
 
         public CoursesController()
         {
@@ -61,21 +60,28 @@ namespace SimpleWebAPI.Controllers
 
         // api/courses/{id}/students
         [HttpGet]
-        [Route("{id}/students")]
+        [Route("{id:int}/students")]
         public List <Student> GetStudentsInCourse(int id)
         {
             //200 request was successful
             //204 no content
-            //404 id doesnt exist
+            
+            foreach (Course c in _courses)
+            {
+                if (c.ID == id)
+                {
+                    return c.Students;
+                }
+            }
 
-            //find right course with id
-            return _students;
+            //return 404
+            throw new HttpResponseException(HttpStatusCode.NotFound);
         }
 
         // api/courses/
-        [HttpPost]
-        [Route("{id}")]
+        [Route("{name}/{templateId}")]
         [ResponseType(typeof(Course))]
+        [HttpPost]
         public IHttpActionResult AddCourse(String name, String templateId)
         {
             //201 creation was successful
@@ -108,18 +114,30 @@ namespace SimpleWebAPI.Controllers
             //404 id not found
             //412 parameters wrong?
 
+
+
             //update right course
         }
 
         // api/courses/
         [HttpDelete]
-        [Route("")]
-        public void DeleteCourse(int id)
+        [Route("{id:int}")]
+        public IHttpActionResult DeleteCourse(int id)
         {
             //200 request successful
             //404 id not found
 
-            //delete right course
+            foreach (Course c in _courses)
+            {
+                if (c.ID == id)
+                {
+                    _courses[_courses.IndexOf(c)] = null;
+                    throw new HttpResponseException(HttpStatusCode.NoContent);
+                }
+            }
+
+            //return 404
+            return NotFound();
         }
 
         // api/courses/{id}
@@ -143,15 +161,22 @@ namespace SimpleWebAPI.Controllers
 
         // api/courses/
         [HttpPost]
-        [Route("")]
-        public void AddStudent(Student s, int id)
+        [Route("{id:int}/{ssn}/{name}")]
+        public IHttpActionResult AddStudent(int id, String ssn, String name)
         {
-            //201 post successful
-            //
-            //404 id not found
+            foreach (Course c in _courses)
+            {
+                if (c.ID == id) {
+                    var s = new Student();
+                    s.SSN = ssn;
+                    s.Name = name;
+                    _courses[_courses.IndexOf(c)].Students.Add(s);
+                    return Ok();
+                } 
+            }
 
-            //add student to right course
-            
+            //return 404
+            return NotFound();
         }
 
 
