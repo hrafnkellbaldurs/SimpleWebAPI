@@ -35,5 +35,11 @@ namespace SimpleWebAPI.Models
         /// </summary>
         public DateTime EndDate { get; set; }
 
+
+        /// <summary>
+        /// A list of students enrolled in this class. Example: { new Student{ SSN = 3012937789, Name: = "John Walker"}, new Student{ SSN = 1234842245, Name = "Paul Johnson"} }
+        /// </summary>
+        public List<Student> Students { get; set; }
+
     }
 }
