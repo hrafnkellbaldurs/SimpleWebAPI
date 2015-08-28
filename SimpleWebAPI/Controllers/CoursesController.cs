@@ -152,7 +152,7 @@ namespace SimpleWebAPI.Controllers
                     temp.EndDate = course.EndDate;
                     temp.Students = course.Students;
 
-                    //201 patch successful
+                    //201 successfully created
                     var location = Url.Link("GetCourse", new { id = course.ID });
                     return Created(location, temp);
 
