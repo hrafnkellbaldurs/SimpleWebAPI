@@ -61,6 +61,7 @@ namespace SimpleWebAPI.Controllers
                                             Name = "Rannveig Guðmundsdóttir"
                                         }
                                     }
+
                     }
                  };
             }
@@ -71,9 +72,6 @@ namespace SimpleWebAPI.Controllers
         [Route("")]
         public List<Course> GetCourses()
         {
-            //200 request was successful
-            //204 no content
-            //
             return _courses;
         }
 
@@ -81,10 +79,7 @@ namespace SimpleWebAPI.Controllers
         [HttpGet]
         [Route("{id:int}/students")]
         public List <Student> GetStudentsInCourse(int id)
-        {
-            //200 request was successful
-            //204 no content
-            
+        {   
             foreach (Course c in _courses)
             {
                 if (c.ID == id)
@@ -103,10 +98,12 @@ namespace SimpleWebAPI.Controllers
         [ResponseType(typeof(Course))]
         public IHttpActionResult AddCourse(Course c)
         {
-            if(c == null)
+            //checking if the course being added is not of the right data type
+            if (c == null)
             {
                 throw new HttpResponseException(HttpStatusCode.PreconditionFailed);
             }
+
             //setting location url
             var location = Url.Link("GetCourse", new { id = c.ID });
 
@@ -119,11 +116,13 @@ namespace SimpleWebAPI.Controllers
         // api/courses/
         [HttpPut]
         [Route("{id:int}")]
-        [ResponseType(typeof(Course))]
         public IHttpActionResult UpdateCourse(int id, Course course)
         {
-            
-            //412 parameters wrong?
+            //checking if the course being added is not of the right data type
+            if (course == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.PreconditionFailed);
+            }
 
             //update right course
             foreach (Course c in _courses)
@@ -152,14 +151,11 @@ namespace SimpleWebAPI.Controllers
         [Route("{id:int}")]
         public IHttpActionResult DeleteCourse(int id)
         {
-            //200 request successful
-            //404 id not found
-
             foreach (Course c in _courses)
             {
                 if (c.ID == id)
                 {
-                    _courses[_courses.IndexOf(c)] = null;
+                    _courses.Remove(c);
                     throw new HttpResponseException(HttpStatusCode.NoContent);
                 }
             }
@@ -173,10 +169,7 @@ namespace SimpleWebAPI.Controllers
         [Route("{id:int}", Name ="GetCourse")]
         public Course GetCourseById(int id)
         {
-            //200 request successful
-            //202 no content
-            //404 id not found
-
+            
             foreach (Course c in _courses)
             {
                 if (c.ID == id) return c; 
@@ -190,13 +183,18 @@ namespace SimpleWebAPI.Controllers
         // api/courses/
         [HttpPost]
         [Route("{id:int}/students")]
-        public IHttpActionResult AddStudent(int id, Student student)
+        public IHttpActionResult AddStudentToCourse(int id, Student student)
         {
+            //checking if the student being added is not of the right data type
+            if (student == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.PreconditionFailed);
+            }
+
             foreach (Course c in _courses)
             {
                 if (c.ID == id) {
                     _courses[_courses.IndexOf(c)].Students.Add(student);
-
                     var location = Url.Link("GetCourse", new { id = c.ID });
                     return Created(location, student);
                 } 
