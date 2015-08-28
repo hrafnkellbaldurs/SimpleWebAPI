@@ -35,17 +35,36 @@ namespace SimpleWebAPI.Controllers
                                         },
                                         new Student
                                         {
-                                            SSN = "1212881234",
+                                            SSN = "1212882659",
+                                            Name = "Rannveig Guðmundsdóttir"
+                                        }
+                                    }
+
+                    },
+                    new Course
+                    {
+                        ID         = 1,
+                        Name       = "Computer Networking",
+                        TemplateID = "T-409-TSAM",
+                        StartDate  = DateTime.Now,
+                        EndDate    = DateTime.Now.AddMonths(3),
+                        Students   = new List<Student>
+                                    {
+                                        new Student
+                                        {
+                                            SSN = "3012932249",
+                                            Name = "Hrafnkell Baldursson"
+                                        },
+                                        new Student
+                                        {
+                                            SSN = "1212882659",
                                             Name = "Rannveig Guðmundsdóttir"
                                         }
                                     }
 
                     }
-                };
-
+                 };
             }
-            
-
         }
 
         // api/courses
@@ -53,6 +72,9 @@ namespace SimpleWebAPI.Controllers
         [Route("")]
         public List<Course> GetCourses()
         {
+            //200 request was successful
+            //204 no content
+            //
             return _courses;
         }
 
@@ -61,10 +83,9 @@ namespace SimpleWebAPI.Controllers
         [Route("{id:int}/students")]
         public List <Student> GetStudentsInCourse(int id)
         {
-            // If there are no courses in the list
-            if (_courses.Count == 0) throw new HttpResponseException(HttpStatusCode.NoContent);
-
-            // Search courses list for the given course
+            //200 request was successful
+            //204 no content
+            
             foreach (Course c in _courses)
             {
                 if (c.ID == id)
@@ -73,42 +94,65 @@ namespace SimpleWebAPI.Controllers
                 }
             }
 
-            //return 404 if the course is not found
+            //return 404
             throw new HttpResponseException(HttpStatusCode.NotFound);
         }
 
         // api/courses/
-        [Route("")]
+        [Route("{name}/{templateId}")]
         [ResponseType(typeof(Course))]
         [HttpPost]
-        public IHttpActionResult AddCourse(Course c)
+        public IHttpActionResult AddCourse(String name, String templateId)
         {
-            if(c == null)
-            {
-                throw new HttpResponseException(HttpStatusCode.PreconditionFailed);
-            }
+            //201 creation was successful
+            //400 bad request, wrong parameters?
+            
+            //creating a new course from parameters
+            var course = new Course();
+            course.Name = name;
+            course.TemplateID = templateId;
+            course.ID = _courses.Count;
+            course.StartDate = DateTime.Now;
+            course.EndDate = DateTime.Now.AddMonths(3);
+            course.Students = new List<Student> { };
 
             //setting location url
-            var location = Url.Link("GetCourse", new { id = c.ID });
+            var location = Url.Link("GetCourse", new { id = course.ID });
 
             //adding course to list
-            _courses.Add(c);
+            _courses.Add(course);
 
-            return Created(location, c);    
+            return Created(location, course);
         }
 
         // api/courses/
-        [HttpPatch]
-        [Route("")]
-        public void UpdateCourse(int id)
-        { 
-            //201 patch successful
-            //404 id not found
+        [HttpPut]
+        [Route("{id:int}")]
+        public IHttpActionResult UpdateCourse(int id, Course course)
+        {
+            
             //412 parameters wrong?
 
-
-
             //update right course
+            foreach (Course c in _courses)
+            {
+                if (c.ID == id)
+                {
+                    var temp = _courses.SingleOrDefault(x=>x.ID == course.ID);
+                    temp.Name = course.Name;
+                    temp.StartDate = course.StartDate;
+                    temp.EndDate = course.EndDate;
+                    temp.Students = course.Students;
+
+                    //201 patch successful
+                    var location = Url.Link("GetCourse", new { id = course.ID });
+                    return Created(location, temp);
+
+                }
+            }
+
+            //404 id not found
+            return NotFound();
         }
 
         // api/courses/
@@ -128,7 +172,7 @@ namespace SimpleWebAPI.Controllers
                 }
             }
 
-            //return 404 if course to be deleted is not found
+            //return 404
             return NotFound();
         }
 
@@ -137,6 +181,10 @@ namespace SimpleWebAPI.Controllers
         [Route("{id:int}", Name ="GetCourse")]
         public Course GetCourseById(int id)
         {
+            //200 request successful
+            //202 no content
+            //404 id not found
+
             foreach (Course c in _courses)
             {
                 if (c.ID == id) return c; 
@@ -149,21 +197,16 @@ namespace SimpleWebAPI.Controllers
 
         // api/courses/
         [HttpPost]
-        [Route("{id:int}/{ssn}/{name}")]
-        public IHttpActionResult AddStudent(int id, String ssn, String name)
+        [Route("{id:int}/students")]
+        public IHttpActionResult AddStudent(int id, Student student)
         {
             foreach (Course c in _courses)
             {
                 if (c.ID == id) {
-                    var s = new Student();
-                    s.SSN = ssn;
-                    s.Name = name;
-                    _courses[_courses.IndexOf(c)].Students.Add(s);
+                    _courses[_courses.IndexOf(c)].Students.Add(student);
 
-                    //setting location url
-                    var location = Url.Link("GetStudent", new { SSN = s.SSN });
-
-                    return Created(location, s);
+                    var location = Url.Link("AddStudent", new { ssn = student.SSN });
+                    return Created(location, student);
                 } 
             }
 
