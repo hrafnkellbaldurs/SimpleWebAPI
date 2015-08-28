@@ -5,7 +5,6 @@ using System.Web;
 
 namespace SimpleWebAPI.Models
 {
-    
 	/// <summary>
     /// This class represents a single student at a school
     /// </summary>
@@ -17,7 +16,6 @@ namespace SimpleWebAPI.Models
         /// Example: "3012933419"
         /// </summary>
         public String SSN { get; set; }
-
 
         /// <summary>
         ///  The name of a student

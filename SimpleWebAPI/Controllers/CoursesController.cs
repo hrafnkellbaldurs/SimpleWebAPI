@@ -16,6 +16,9 @@ namespace SimpleWebAPI.Controllers
     {
         private static List<Course> _courses;
 
+        /// <summary>
+        /// This is the main course method
+        /// </summary>
         public CoursesController()
         {
             if(_courses == null)
@@ -64,7 +67,6 @@ namespace SimpleWebAPI.Controllers
                                             Name = "Rannveig Guðmundsdóttir"
                                         }
                                     }
-
                     }
                  };
             }
@@ -74,7 +76,6 @@ namespace SimpleWebAPI.Controllers
         /// Gets courses currently available
         /// </summary>
         /// <returns>An ArrayList of Courses</returns>
-   
         [HttpGet]
         [Route("")]
         public List<Course> GetCourses()
@@ -158,7 +159,6 @@ namespace SimpleWebAPI.Controllers
                     //201 successfully created
                     var location = Url.Link("GetCourse", new { id = course.ID });
                     return Created(location, temp);
-
                 }
             }
 
@@ -197,7 +197,6 @@ namespace SimpleWebAPI.Controllers
         [Route("{id:int}", Name ="GetCourse")]
         public Course GetCourseById(int id)
         {
-            
             foreach (Course c in _courses)
             {
                 if (c.ID == id) return c; 
@@ -205,7 +204,6 @@ namespace SimpleWebAPI.Controllers
 
             //return 404
             throw new HttpResponseException(HttpStatusCode.NotFound);
-
         }
 
         /// <summary>
@@ -236,8 +234,5 @@ namespace SimpleWebAPI.Controllers
             //return 404
             return NotFound();
         }
-
-
-
     }
 }
