@@ -61,7 +61,6 @@ namespace SimpleWebAPI.Controllers
                                             Name = "Rannveig Guðmundsdóttir"
                                         }
                                     }
-
                     }
                  };
             }
@@ -99,35 +98,28 @@ namespace SimpleWebAPI.Controllers
         }
 
         // api/courses/
-        [Route("{name}/{templateId}")]
-        [ResponseType(typeof(Course))]
         [HttpPost]
-        public IHttpActionResult AddCourse(String name, String templateId)
+        [Route("")]
+        [ResponseType(typeof(Course))]
+        public IHttpActionResult AddCourse(Course c)
         {
-            //201 creation was successful
-            //400 bad request, wrong parameters?
-            
-            //creating a new course from parameters
-            var course = new Course();
-            course.Name = name;
-            course.TemplateID = templateId;
-            course.ID = _courses.Count;
-            course.StartDate = DateTime.Now;
-            course.EndDate = DateTime.Now.AddMonths(3);
-            course.Students = new List<Student> { };
-
+            if(c == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.PreconditionFailed);
+            }
             //setting location url
-            var location = Url.Link("GetCourse", new { id = course.ID });
+            var location = Url.Link("GetCourse", new { id = c.ID });
 
             //adding course to list
-            _courses.Add(course);
+            _courses.Add(c);
 
-            return Created(location, course);
+            return Created(location, c);
         }
 
         // api/courses/
         [HttpPut]
         [Route("{id:int}")]
+        [ResponseType(typeof(Course))]
         public IHttpActionResult UpdateCourse(int id, Course course)
         {
             
@@ -205,7 +197,7 @@ namespace SimpleWebAPI.Controllers
                 if (c.ID == id) {
                     _courses[_courses.IndexOf(c)].Students.Add(student);
 
-                    var location = Url.Link("AddStudent", new { ssn = student.SSN });
+                    var location = Url.Link("GetCourse", new { id = c.ID });
                     return Created(location, student);
                 } 
             }
