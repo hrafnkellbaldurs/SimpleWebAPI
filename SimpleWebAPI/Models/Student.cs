@@ -14,9 +14,9 @@ namespace SimpleWebAPI.Models
         /// <summary>
         /// The Social Security Number of a student. 
         /// Used as a unique identifier.
-        /// Example: 3012938847
+        /// Example: "3012938847"
         /// </summary>
-        public string SSN { get; set; }
+        public String SSN { get; set; }
 
 
         /// <summary>

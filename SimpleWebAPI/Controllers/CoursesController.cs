@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace SimpleWebAPI.Controllers
 {
+    /// <summary>
+    /// This is the Courses Controller
+    /// </summary>
     [RoutePrefix("api/courses")]
     public class CoursesController : ApiController
     {
