@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Linq;
 
 namespace SimpleWebAPI.Controllers
 {
@@ -43,7 +44,7 @@ namespace SimpleWebAPI.Controllers
                 };
 
             }
-            
+     
 
         }
 
@@ -106,17 +107,33 @@ namespace SimpleWebAPI.Controllers
         }
 
         // api/courses/
-        [HttpPatch]
-        [Route("")]
-        public void UpdateCourse(int id)
-        { 
-            //201 patch successful
-            //404 id not found
+        [HttpPut]
+        [Route("{id:int}")]
+        public IHttpActionResult UpdateCourse(int id, Course course)
+        {
+            
             //412 parameters wrong?
 
-
-
             //update right course
+            foreach (Course c in _courses)
+            {
+                if (c.ID == id)
+                {
+                    var temp = _courses.SingleOrDefault(x=>x.ID == course.ID);
+                    temp.Name = course.Name;
+                    temp.StartDate = course.StartDate;
+                    temp.EndDate = course.EndDate;
+                    temp.Students = course.Students;
+
+                    //201 patch successful
+                    var location = Url.Link("GetCourse", new { id = course.ID });
+                    return Created(location, temp);
+
+                }
+            }
+
+            //404 id not found
+            return NotFound();
         }
 
         // api/courses/
@@ -161,17 +178,16 @@ namespace SimpleWebAPI.Controllers
 
         // api/courses/
         [HttpPost]
-        [Route("{id:int}/{ssn}/{name}")]
-        public IHttpActionResult AddStudent(int id, String ssn, String name)
+        [Route("{id:int}/students")]
+        public IHttpActionResult AddStudent(int id, Student student)
         {
             foreach (Course c in _courses)
             {
                 if (c.ID == id) {
-                    var s = new Student();
-                    s.SSN = ssn;
-                    s.Name = name;
-                    _courses[_courses.IndexOf(c)].Students.Add(s);
-                    return Ok();
+                    _courses[_courses.IndexOf(c)].Students.Add(student);
+
+                    var location = Url.Link("AddStudent", new { ssn = student.SSN });
+                    return Created(location, student);
                 } 
             }
 
